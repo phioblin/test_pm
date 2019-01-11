@@ -12,4 +12,10 @@ public interface AccountRule {
      * @return true if the operation is permitted, false otherwise
      */
     boolean withdrawPermitted(Double resultingAccountBalance);
+
+    /**
+     * Gets the minimum balance in the defined rule.
+     * @return minimum rule balance
+     */
+    Double getMinimumAccountBalance();
 }

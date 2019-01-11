@@ -1,11 +1,12 @@
 package com.priceminister.account;
 
 
-import static org.junit.Assert.*;
+import com.priceminister.account.implementation.CustomerAccount;
+import com.priceminister.account.implementation.CustomerAccountRule;
+import org.junit.Before;
+import org.junit.Test;
 
-import org.junit.*;
-
-import com.priceminister.account.implementation.*;
+import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -20,15 +21,13 @@ import com.priceminister.account.implementation.*;
  */
 public class CustomerAccountTest {
     
-    Account customerAccount;
-    AccountRule rule;
+    private Account customerAccount;
+    private AccountRule rule;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         customerAccount = new CustomerAccount();
+        rule = new CustomerAccountRule(-20.0);
     }
     
     /**
@@ -36,26 +35,68 @@ public class CustomerAccountTest {
      */
     @Test
     public void testAccountWithoutMoneyHasZeroBalance() {
-        fail("not yet implemented");
+        Double zeroBalance = 0.0;
+        assertEquals(zeroBalance, customerAccount.getBalance());
     }
     
     /**
-     * Adds money to the account and checks that the new balance is as expected.
+     * Add a positive amount to the account and checks that the new balance is as expected.
      */
     @Test
-    public void testAddPositiveAmount() {
-        fail("not yet implemented");
+    public void testAddPositiveAmount() throws IllegalAmountException {
+        Double positiveAmount = 10.32;
+        customerAccount.add(positiveAmount);
+        assertEquals(positiveAmount, customerAccount.getBalance());
+    }
+
+    /**
+     * Add a negative amount to the account and checks that IllegalAmountException exception is thrown.
+     */
+    @Test(expected=IllegalAmountException.class)
+    public void testAddNegativeAmount() throws IllegalAmountException {
+        Double negativeAmount = -10.32;
+        customerAccount.add(negativeAmount);
+    }
+
+    /**
+     * Adds a null value to the account and checks that IllegalAmountException exception is thrown.
+     */
+    @Test(expected=IllegalAmountException.class)
+    public void testAddNullAmount() throws IllegalAmountException {
+        customerAccount.add(null);
     }
     
     /**
      * Tests that an illegal withdrawal throws the expected exception.
-     * Use the logic contained in CustomerAccountRule; feel free to refactor the existing code.
+     */
+    @Test(expected=IllegalBalanceException.class)
+    public void testWithdrawAndReportBalanceIllegalBalance() throws IllegalAmountException, IllegalBalanceException {
+        Double illegalWithDraw = 35.0;
+        customerAccount.withdrawAndReportBalance(illegalWithDraw, rule);
+
+    }
+
+    /**
+     * Tests that a withdrawal of null value throws the expected exception.
+     */
+    @Test(expected=IllegalAmountException.class)
+    public void testNullWithdraw() throws IllegalAmountException, IllegalBalanceException {
+        customerAccount.withdrawAndReportBalance(null, rule);
+
+    }
+
+    /**
+     * Tests that a legal withdraw returns the new balance and update balance
+     * @throws IllegalBalanceException
+     * @throws IllegalAmountException
      */
     @Test
-    public void testWithdrawAndReportBalanceIllegalBalance() {
-        fail("not yet implemented");
+    public void testWithdrawAndReportBalance () throws IllegalBalanceException, IllegalAmountException {
+        Double legalWithDraw = 15.0;
+        Double expectedNewBalance = -15.0;
+        Double newBalance = customerAccount.withdrawAndReportBalance(legalWithDraw, rule);
+        assertEquals(expectedNewBalance, newBalance);
+        assertEquals(expectedNewBalance, customerAccount.getBalance());
     }
-    
-    // Also implement missing unit tests for the above functionalities.
 
 }
