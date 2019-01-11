@@ -6,6 +6,10 @@ import com.priceminister.account.implementation.CustomerAccountRule;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.Assert.assertEquals;
 
 
@@ -97,6 +101,40 @@ public class CustomerAccountTest {
         Double newBalance = customerAccount.withdrawAndReportBalance(legalWithDraw, rule);
         assertEquals(expectedNewBalance, newBalance);
         assertEquals(expectedNewBalance, customerAccount.getBalance());
+    }
+
+    /**
+     * Tests assume that add and withdraw operations works well in a multi-thread context,
+     * @throws InterruptedException
+     */
+    @Test
+    public void testInMultiThread() throws InterruptedException {
+        ExecutorService service = Executors.newFixedThreadPool(3);
+
+        for(int i = 0; i < 1000; i++){
+            service.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        customerAccount.add(10.0);
+                        customerAccount.withdrawAndReportBalance(10.0, rule);
+                    } catch (IllegalBalanceException | IllegalAmountException e){
+                        //should never happen
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        service.awaitTermination(100, TimeUnit.MILLISECONDS);
+
+        //TODO replace by Lambda
+//        IntStream.range(0, 1000)
+//                .forEach((int count) -> service.submit(customerAccount.test(count)));
+//        service.awaitTermination(1000, TimeUnit.MILLISECONDS);
+
+        Double expectedBalance=0.0;
+        assertEquals(expectedBalance, customerAccount.getBalance());
+
     }
 
 }

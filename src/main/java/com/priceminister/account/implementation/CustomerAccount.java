@@ -2,13 +2,14 @@ package com.priceminister.account.implementation;
 
 import com.priceminister.account.*;
 
-
+/**
+ * Multi-thread implementation
+ */
 public class CustomerAccount implements Account {
 
     private Double balance = 0.0;
 
-    //TODO synchronize
-    public void add(Double addedAmount) throws IllegalAmountException {
+    public synchronized void  add(Double addedAmount) throws IllegalAmountException {
         if(addedAmount == null || addedAmount <= 0.0) {
             throw new IllegalAmountException(addedAmount);
         }
@@ -19,8 +20,7 @@ public class CustomerAccount implements Account {
         return balance;
     }
 
-    //TODO synchronize
-    public Double withdrawAndReportBalance(Double withdrawnAmount, AccountRule rule)
+    public synchronized Double withdrawAndReportBalance(Double withdrawnAmount, AccountRule rule)
             throws IllegalBalanceException, IllegalAmountException {
         if(withdrawnAmount == null || withdrawnAmount <= 0.0) {
             throw new IllegalAmountException(withdrawnAmount);
