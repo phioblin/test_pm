@@ -126,15 +126,8 @@ public class CustomerAccountTest {
             });
         }
         service.awaitTermination(100, TimeUnit.MILLISECONDS);
-
-        //TODO replace by Lambda
-//        IntStream.range(0, 1000)
-//                .forEach((int count) -> service.submit(customerAccount.test(count)));
-//        service.awaitTermination(1000, TimeUnit.MILLISECONDS);
-
         Double expectedBalance=0.0;
         assertEquals(expectedBalance, customerAccount.getBalance());
-
     }
 
 }
